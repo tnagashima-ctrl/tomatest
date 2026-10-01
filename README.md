@@ -10,7 +10,8 @@ workspace/
   daily/      日次ログ・返信案
   archive/    完了タスク退避
 scripts/
-  daily_scan.sh                      日次実行スクリプト
+  daily_scan.sh / daily_scan.ps1     日次実行スクリプト（Mac・Linux / Windows）
+  register_task_windows.ps1          Windows タスクスケジューラ登録
   com.local.claude-daily-scan.plist  macOS launchd 設定（毎日7:30）
 ```
 
@@ -27,6 +28,13 @@ scripts/
    launchctl load ~/Library/LaunchAgents/com.local.claude-daily-scan.plist
    ```
    Linux は cron: `30 7 * * * /path/to/scripts/daily_scan.sh`
+
+## Windows
+1. Git for Windows をインストール（Claude Code が必要とする）。
+2. PowerShell で `irm https://claude.ai/install.ps1 | iex`、続けて `claude` でログイン。
+3. 上記セットアップ 2〜3 を行う。
+4. 手動実行: `powershell -ExecutionPolicy Bypass -File scripts\daily_scan.ps1`
+5. 自動実行: `powershell -ExecutionPolicy Bypass -File scripts\register_task_windows.ps1`（毎朝7:30）
 
 ## 随時利用
 `cd workspace && claude` で起動すれば、`CLAUDE.md` と `TASKS.md` を前提に対話できる。
