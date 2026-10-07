@@ -1,0 +1,179 @@
+<script>
+
+(function () {
+  "use strict";
+ 
+  /* ===== 設定（ここだけ書き換える） ================================== */
+  var WHERE = {
+    origin: "https://where-sim.pages.dev",   // Cloudflare Pages の公開URL
+    formSelector: "form",                    // 対象フォーム（ページに1つならこのまま）
+    source: "1to1フォーム営業",               // Slack 通知の「流入元」
+    redirectDelay: 600,                      // STUDIO 側の送信を待ってから移動する ms
+    companyPlaceholder: "{{会社名}}",         // LP 内のこの文字列を会社名に置換
+    companyFallback: "貴社",                  // トークンがないときの置換文字
+    /* STUDIO の項目名（ラベル）との対応。上から順に探す */
+    fields: {
+      name:    ["お名前", "氏名", "名前", "name"],
+      email:   ["メールアドレス", "メール", "email", "mail"],
+      company: ["会社名", "企業名", "company"],
+      position: ["役職", "position"],
+      tel:     ["電話番号", "電話", "tel", "phone"],
+      pref:    ["都道府県", "pref", "prefecture"],
+      city:    ["市区町村", "city"],
+      use:     ["想定用途", "用途", "use"],
+      area:    ["想定面積", "面積", "area"],
+      station: ["駅距離", "駅からの距離", "station"],
+      purchase_method: ["仕入れ方法", "purchase_method"],
+      purchase_policy: ["仕入れ意思", "purchase_policy"]
+    }
+  };
+  /* ================================================================== */
+ 
+  var DEBUG = /[?&]where_debug=1/.test(location.search);
+  function log() { if (DEBUG) console.log.apply(console, ["[WHERE]"].concat([].slice.call(arguments))); }
+ 
+  /* --- トークン（LP 内のページ移動でも保持） --- */
+  var qs = new URLSearchParams(location.search);
+  var token = qs.get("t") || qs.get("token") || "";
+  try {
+    if (token) sessionStorage.setItem("where_t", token);
+    else token = sessionStorage.getItem("where_t") || "";
+  } catch (e) {}
+ 
+  /* --- {{会社名}} の差し込み（STUDIO は後から描画するので監視し続ける） --- */
+  function replaceCompany(name) {
+    var ph = WHERE.companyPlaceholder;
+    function fix(node) {
+      if (node.nodeValue && node.nodeValue.indexOf(ph) >= 0) node.nodeValue = node.nodeValue.split(ph).join(name);
+    }
+    function walk(root) {
+      var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+      while ((n = w.nextNode())) fix(n);
+    }
+    walk(document.body);
+    new MutationObserver(function (list) {
+      list.forEach(function (m) {
+        if (m.type === "characterData") fix(m.target);
+        m.addedNodes.forEach(function (x) { x.nodeType === 3 ? fix(x) : x.nodeType === 1 && walk(x); });
+      });
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  if (token) {
+    fetch(WHERE.origin + "/api/company?t=" + encodeURIComponent(token))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { replaceCompany(j && j.company ? j.company : WHERE.companyFallback); })
+      .catch(function () { replaceCompany(WHERE.companyFallback); });
+  } else {
+    replaceCompany(WHERE.companyFallback);
+  }
+ 
+  /* --- 入力欄の読み取り --- */
+  function norm(s) {
+    return String(s || "").normalize("NFKC").replace(/[（(]?(必須|任意)[)）]?/g, "")
+      .replace(/[\s*＊:：]/g, "").toLowerCase();
+  }
+  function namesOf(el) {
+    var strong = [el.name, el.id, el.getAttribute("aria-label"), el.placeholder];
+    var weak = [];
+    if (el.labels && el.labels[0]) weak.push(el.labels[0].innerText);
+    var p = el.parentElement;
+    for (var i = 0; p && i < 3; i++, p = p.parentElement) {          // STUDIO は近くの見出しテキストがラベル
+      var t = (p.innerText || "").split("\n")[0];
+      if (t && t.length <= 20) weak.push(t);
+    }
+    return { strong: strong.filter(Boolean).map(norm), weak: weak.filter(Boolean).map(norm) };
+  }
+  function valueOf(el) {
+    if (el.type === "radio") return el.checked ? el.value : null;
+    if (el.type === "checkbox") return null;
+    if (el.tagName === "SELECT") {
+      var o = el.options[el.selectedIndex];
+      return el.value || (o ? o.text : "");
+    }
+    return el.value;
+  }
+  function collect(form) {
+    var els = [].slice.call(form.querySelectorAll("input, select, textarea")).filter(function (el) {
+      return !/^(submit|button|hidden|reset|file|image)$/.test(el.type);
+    });
+    var info = els.map(function (el) { return { el: el, n: namesOf(el) }; });
+    var used = [], data = {}, table = [];
+    Object.keys(WHERE.fields).forEach(function (key) {
+      var aliases = WHERE.fields[key].map(norm), hit = null;
+      ["strong", "weak"].some(function (kind) {
+        info.some(function (x) {
+          if (used.indexOf(x.el) >= 0 && x.el.type !== "radio") return false;
+          var ok = x.n[kind].some(function (c) {
+            return aliases.some(function (a) { return c === a || (c.length <= 24 && c.indexOf(a) >= 0); });
+          });
+          if (ok && (x.el.type !== "radio" || x.el.checked)) { hit = x.el; return true; }
+          return false;
+        });
+        return !!hit;
+      });
+      if (!hit && key === "email") hit = form.querySelector('input[type="email"]');
+      if (hit) {
+        used.push(hit);
+        var v = valueOf(hit);
+        if (v != null && v !== "") data[key] = String(v).trim();
+      }
+      table.push({ 項目: key, 値: data[key] || "（未取得）", 要素: hit ? (hit.name || hit.id || hit.tagName) : "-" });
+    });
+    return { data: data, table: table };
+  }
+ 
+  /* --- 送信 --- */
+  var busy = false, lastSig = "", lastAt = 0;
+  function handle(form) {
+    if (!form || !form.matches || !form.matches(WHERE.formSelector)) return;
+    if (form.checkValidity && !form.checkValidity()) { log("入力不備のため送信しません"); return; }
+    var c = collect(form), d = c.data;
+    if (DEBUG) console.table(c.table);
+    if (!d.email || !d.pref) { log("メールアドレスか都道府県が読み取れませんでした", d); return; }
+ 
+    var sig = JSON.stringify(d), now = Date.now();
+    if (busy || (sig === lastSig && now - lastAt < 5000)) return;
+    busy = true; lastSig = sig; lastAt = now;
+ 
+    d.token = token;
+    d.source = WHERE.source;
+    d.page = location.href.split("#")[0];
+    fetch(WHERE.origin + "/api/lead", {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(d)
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        busy = false;
+        if (x.ok && x.j.url) {
+          log("受付しました", x.j);
+          setTimeout(function () { location.href = x.j.url; }, WHERE.redirectDelay);
+        } else {
+          console.warn("[WHERE] 受付エラー", x.j);
+        }
+      })
+      .catch(function (e) { busy = false; console.warn("[WHERE] 通信エラー", e); });
+  }
+ 
+  // STUDIO のフォームは JS で送信されるため、キャプチャ段階で先に拾う
+  document.addEventListener("submit", function (e) { handle(e.target); }, true);
+  // submit イベントが出ない実装への保険（送信ボタンのクリック）
+  document.addEventListener("click", function (e) {
+    var b = e.target && e.target.closest && e.target.closest('button, input[type="submit"]');
+    if (!b || b.getAttribute("type") === "button") return;
+    var f = b.form || b.closest("form");
+    if (f) setTimeout(function () { handle(f); }, 0);
+  }, true);
+ 
+  if (DEBUG) {
+    setTimeout(function () {
+      var f = document.querySelector(WHERE.formSelector);
+      if (!f) return console.warn("[WHERE] フォームが見つかりません:", WHERE.formSelector);
+      console.log("[WHERE] 読み取りテスト（現在の入力値）");
+      console.table(collect(f).table);
+    }, 2000);
+  }
+})();
+</script>
