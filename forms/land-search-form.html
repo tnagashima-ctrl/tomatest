@@ -252,9 +252,11 @@
 
     /* --- 02 仕入れについて --- */
     var s2 = section("02", "仕入れについて");
+    var methodSelect = selectBox("purchase_method", PURCHASE_METHODS);
     var methodField = field({
       label: "現在の土地・物件の仕入れ方法",
-      control: choices("radio", "purchase_method", PURCHASE_METHODS, 2),
+      forId: methodSelect.id,
+      control: methodSelect,
       error: "仕入れ方法を選択してください",
       span2: true,
     });
@@ -330,7 +332,7 @@
     }
     clearOnChange([prefSelect], prefField.err);
     clearOnChange([].slice.call(typeGroup.querySelectorAll("input")), typeField.err);
-    clearOnChange([].slice.call(methodField.node.querySelectorAll("input")), methodField.err);
+    clearOnChange([methodSelect], methodField.err);
     clearOnChange([].slice.call(policyField.node.querySelectorAll("input")), policyField.err);
     clearOnChange([companyInput], companyField.err);
     clearOnChange([positionSelect], positionField.err);
@@ -377,8 +379,8 @@
       var types = checkedValues(form, typeName);
       if (types.length === 0) fail(typeField.err);
 
-      var methodValue = checkedValues(form, "purchase_method")[0] || "";
-      if (!methodValue) fail(methodField.err);
+      var methodValue = methodSelect.value;
+      if (!methodValue) fail(methodField.err, [methodSelect]);
 
       var policyValue = checkedValues(form, "purchase_policy")[0] || "";
       if (!policyValue) fail(policyField.err);
