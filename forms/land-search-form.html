@@ -9,7 +9,7 @@
     HERO_LEAD: "ご希望の条件を選択のうえ、下記フォームよりお問い合わせください。",
   };
 
-  var MOUNT_ATTR = "data-lsf-mounted";
+  var MOUNT_ATTR = "data-lsf-mounted-v2";
   var currentScript = document.currentScript;
   if (currentScript && currentScript.getAttribute(MOUNT_ATTR)) return;
   if (currentScript) currentScript.setAttribute(MOUNT_ATTR, "1");
@@ -41,13 +41,12 @@
   var SELECT_ARROW =
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236b756a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
 
-  var STYLE_ID = "lsf-style";
+  var STYLE_ID = "lsf-style-v2";
   if (!document.getElementById(STYLE_ID)) {
     var style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = [
       ".lsf-root{--lsf-accent:#1a7f5a;--lsf-accent-dark:#125c40;--lsf-accent-soft:#eefaf4;--lsf-border:#dde1de;--lsf-text:#20261f;--lsf-muted:#6b756a;--lsf-danger:#d3402b;position:relative;box-sizing:border-box;max-width:880px;margin:0 auto;padding:32px 20px 40px;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;font-size:14px;line-height:1.6;color:var(--lsf-text);text-align:left;}",
-      // 埋め込み先（STUDIO）のスタイルの影響を受けないようにリセット
       ".lsf-root *{box-sizing:border-box;}",
       ".lsf-root h2,.lsf-root h3,.lsf-root p{margin:0;padding:0;}",
       ".lsf-root input,.lsf-root select,.lsf-root button{font-family:inherit;margin:0;}",
@@ -478,6 +477,7 @@
       }
     }
     buildForm(mountPoint);
+    console.info("[lsf] フォーム v2 を表示しました");
   }
 
   if (document.readyState === "loading") {
