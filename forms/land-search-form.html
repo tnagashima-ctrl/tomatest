@@ -38,71 +38,85 @@
     "今後、直接仕入れを行う予定はない",
   ];
 
+  var SELECT_ARROW =
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236b756a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
+
   var STYLE_ID = "lsf-style";
   if (!document.getElementById(STYLE_ID)) {
     var style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = [
-      ".lsf-root{--lsf-accent:#1a7f5a;--lsf-accent-dark:#125c40;--lsf-bg:#f7f8f7;--lsf-border:#dde1de;--lsf-text:#20261f;--lsf-muted:#6b756a;--lsf-danger:#d3402b;box-sizing:border-box;max-width:900px;margin:0 auto;padding:32px 20px 40px;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;color:var(--lsf-text);}",
+      ".lsf-root{--lsf-accent:#1a7f5a;--lsf-accent-dark:#125c40;--lsf-accent-soft:#eefaf4;--lsf-border:#dde1de;--lsf-text:#20261f;--lsf-muted:#6b756a;--lsf-danger:#d3402b;position:relative;box-sizing:border-box;max-width:880px;margin:0 auto;padding:32px 20px 40px;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;font-size:14px;line-height:1.6;color:var(--lsf-text);text-align:left;}",
+      // 埋め込み先（STUDIO）のスタイルの影響を受けないようにリセット
       ".lsf-root *{box-sizing:border-box;}",
+      ".lsf-root h2,.lsf-root h3,.lsf-root p{margin:0;padding:0;}",
+      ".lsf-root input,.lsf-root select,.lsf-root button{font-family:inherit;margin:0;}",
       ".lsf-header{text-align:center;margin-bottom:28px;}",
-      ".lsf-header h2{font-size:24px;font-weight:700;margin:0 0 8px;}",
-      ".lsf-header p{font-size:14px;color:var(--lsf-muted);margin:0;line-height:1.7;}",
-      ".lsf-section{background:#fff;border:1px solid var(--lsf-border);border-radius:12px;padding:24px 20px;margin:0;}",
-      ".lsf-columns{display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;}",
-      ".lsf-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}",
-      "@media (max-width:680px){.lsf-columns{flex-direction:column;}}",
-      ".lsf-section-title{font-size:15px;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:8px;}",
-      ".lsf-section-title .lsf-req{font-size:11px;font-weight:600;color:#fff;background:var(--lsf-danger);border-radius:4px;padding:2px 6px;}",
-      ".lsf-section-title .lsf-opt{font-size:11px;font-weight:600;color:var(--lsf-muted);background:#eef0ee;border-radius:4px;padding:2px 6px;}",
-      ".lsf-section-desc{font-size:12px;color:var(--lsf-muted);margin:0 0 14px;}",
-      ".lsf-select{width:100%;padding:11px 12px;font-size:14px;border:1px solid var(--lsf-border);border-radius:8px;background:#fff;color:var(--lsf-text);transition:border-color .15s ease;}",
-      ".lsf-select:focus{outline:none;border-color:var(--lsf-accent);box-shadow:0 0 0 3px rgba(26,127,90,.12);}",
-      ".lsf-select:disabled{background:#f5f6f5;color:var(--lsf-muted);cursor:not-allowed;}",
-      ".lsf-select.lsf-invalid{border-color:var(--lsf-danger);}",
-      ".lsf-checkbox-group{display:flex;flex-wrap:wrap;gap:10px;}",
-      ".lsf-checkbox{position:relative;}",
-      ".lsf-checkbox input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}",
-      ".lsf-checkbox label{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;font-size:13px;border:1px solid var(--lsf-border);border-radius:10px;cursor:pointer;user-select:none;transition:all .15s ease;background:#fff;}",
-      ".lsf-checkbox .lsf-box{width:16px;height:16px;border:1.5px solid var(--lsf-border);border-radius:4px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;transition:all .15s ease;}",
-      ".lsf-checkbox .lsf-box svg{width:10px;height:10px;opacity:0;transition:opacity .1s;}",
-      ".lsf-checkbox input:checked + label{border-color:var(--lsf-accent);background:#eefaf4;}",
-      ".lsf-checkbox input:checked + label .lsf-box{background:var(--lsf-accent);border-color:var(--lsf-accent);}",
-      ".lsf-checkbox input:checked + label .lsf-box svg{opacity:1;}",
-      ".lsf-checkbox input:focus-visible + label{outline:2px solid var(--lsf-accent);outline-offset:2px;}",
-      ".lsf-radio-group{flex-direction:column;flex-wrap:nowrap;}",
-      ".lsf-radio-group .lsf-checkbox label{display:flex;width:100%;line-height:1.5;}",
-      ".lsf-radio-group .lsf-box{border-radius:50%;}",
-      ".lsf-field{margin-bottom:16px;}",
-      ".lsf-field:last-child{margin-bottom:0;}",
-      ".lsf-field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}",
-      ".lsf-field label .lsf-req{font-size:10px;font-weight:600;color:#fff;background:var(--lsf-danger);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle;}",
-      ".lsf-field label .lsf-opt{font-size:10px;font-weight:600;color:var(--lsf-muted);background:#eef0ee;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle;}",
-      ".lsf-field input[type=text],.lsf-field input[type=email],.lsf-field input[type=tel]{width:100%;padding:11px 12px;font-size:14px;border:1px solid var(--lsf-border);border-radius:8px;background:#fff;color:var(--lsf-text);transition:border-color .15s ease;}",
-      ".lsf-field input:focus{outline:none;border-color:var(--lsf-accent);box-shadow:0 0 0 3px rgba(26,127,90,.12);}",
-      ".lsf-field input.lsf-invalid{border-color:var(--lsf-danger);}",
-      ".lsf-name-row{display:flex;gap:10px;}",
-      ".lsf-name-sub{flex:1;min-width:0;}",
-      ".lsf-name-sub-label{display:block;font-size:11px;color:var(--lsf-muted);margin-bottom:4px;}",
+      ".lsf-header h2{font-size:24px;font-weight:700;line-height:1.4;margin-bottom:8px;}",
+      ".lsf-header p{font-size:14px;color:var(--lsf-muted);line-height:1.7;}",
+      ".lsf-form{display:flex;flex-direction:column;gap:16px;}",
+      ".lsf-section{background:#fff;border:1px solid var(--lsf-border);border-radius:14px;padding:28px 28px 30px;}",
+      ".lsf-section-head{display:flex;align-items:baseline;gap:10px;padding-bottom:14px;margin-bottom:22px;border-bottom:1px solid var(--lsf-border);}",
+      ".lsf-step{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--lsf-accent);}",
+      ".lsf-section-head h3{font-size:17px;font-weight:700;line-height:1.4;}",
+      ".lsf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 16px;}",
+      ".lsf-span2{grid-column:1/-1;}",
+      ".lsf-field{min-width:0;}",
+      ".lsf-label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;line-height:1.4;margin:0 0 8px;}",
+      ".lsf-req,.lsf-opt{font-size:11px;font-weight:600;line-height:1;border-radius:4px;padding:4px 6px;}",
+      ".lsf-req{color:#fff;background:var(--lsf-danger);}",
+      ".lsf-opt{color:var(--lsf-muted);background:#eef0ee;}",
+      ".lsf-desc{font-size:12px;color:var(--lsf-muted);margin:-4px 0 10px !important;}",
+      ".lsf-input{display:block;width:100%;height:46px;padding:0 14px;font-size:15px;color:var(--lsf-text);background:#fff;border:1px solid var(--lsf-border);border-radius:8px;transition:border-color .15s ease,box-shadow .15s ease;}",
+      ".lsf-input::placeholder{color:#a5ada4;}",
+      "select.lsf-input{-webkit-appearance:none;appearance:none;padding-right:38px;background-image:" + SELECT_ARROW + ";background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;}",
+      ".lsf-input:focus{outline:none;border-color:var(--lsf-accent);box-shadow:0 0 0 3px rgba(26,127,90,.12);}",
+      ".lsf-input.lsf-invalid{border-color:var(--lsf-danger);}",
+      ".lsf-name-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}",
+      ".lsf-choices{display:grid;grid-template-columns:repeat(var(--lsf-cols,2),minmax(0,1fr));gap:10px;}",
+      ".lsf-choice{position:relative;display:flex;}",
+      ".lsf-choice input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;}",
+      ".lsf-choice label{flex:1;display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 14px;font-size:14px;font-weight:400;line-height:1.5;background:#fff;border:1px solid var(--lsf-border);border-radius:10px;cursor:pointer;user-select:none;transition:border-color .15s ease,background .15s ease;margin:0;}",
+      ".lsf-choice:hover label{border-color:#b9c2bb;}",
+      ".lsf-box{width:18px;height:18px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #c3cac4;border-radius:4px;background:#fff;transition:all .15s ease;}",
+      ".lsf-choices-radio .lsf-box{border-radius:50%;}",
+      ".lsf-box svg{width:11px;height:11px;opacity:0;transition:opacity .1s;}",
+      ".lsf-choice input:checked + label{border-color:var(--lsf-accent);background:var(--lsf-accent-soft);}",
+      ".lsf-choice input:checked + label .lsf-box{background:var(--lsf-accent);border-color:var(--lsf-accent);}",
+      ".lsf-choice input:checked + label .lsf-box svg{opacity:1;}",
+      ".lsf-choice input:focus-visible + label{outline:2px solid var(--lsf-accent);outline-offset:2px;}",
       ".lsf-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}",
       ".lsf-error-msg{font-size:12px;color:var(--lsf-danger);margin-top:6px;display:none;}",
       ".lsf-error-msg.lsf-show{display:block;}",
-      ".lsf-consent{display:flex;align-items:flex-start;gap:10px;}",
-      ".lsf-consent input{margin-top:3px;flex-shrink:0;width:16px;height:16px;accent-color:var(--lsf-accent);cursor:pointer;}",
-      ".lsf-consent label{font-size:13px;line-height:1.6;font-weight:400;margin:0;cursor:pointer;}",
+      ".lsf-footer{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:8px;}",
+      ".lsf-consent{display:flex;align-items:center;justify-content:center;gap:10px;}",
+      ".lsf-consent input{flex-shrink:0;width:18px;height:18px;accent-color:var(--lsf-accent);cursor:pointer;}",
+      ".lsf-consent label{font-size:14px;line-height:1.6;cursor:pointer;margin:0;}",
       ".lsf-consent a{color:var(--lsf-accent);text-decoration:underline;}",
-      ".lsf-submit-wrap{margin-top:8px;}",
-      ".lsf-submit{width:100%;padding:15px;font-size:15px;font-weight:700;color:#fff;background:var(--lsf-accent);border:none;border-radius:10px;cursor:pointer;transition:background .15s ease;}",
+      ".lsf-footer .lsf-error-msg{margin-top:-8px;text-align:center;}",
+      ".lsf-submit{width:100%;max-width:400px;height:56px;font-size:16px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--lsf-accent);border:none;border-radius:10px;cursor:pointer;transition:background .15s ease;}",
       ".lsf-submit:hover:not(:disabled){background:var(--lsf-accent-dark);}",
       ".lsf-submit:disabled{opacity:.6;cursor:not-allowed;}",
-      ".lsf-banner{padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;line-height:1.6;}",
+      ".lsf-banner{padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.6;display:none;}",
       ".lsf-banner.lsf-show{display:block;}",
       ".lsf-banner.lsf-error{background:#fdecea;color:var(--lsf-danger);border:1px solid #f6c6bf;}",
-      ".lsf-banner.lsf-success{background:#eefaf4;color:var(--lsf-accent-dark);border:1px solid #bfe6d4;}",
+      ".lsf-banner.lsf-success{background:var(--lsf-accent-soft);color:var(--lsf-accent-dark);border:1px solid #bfe6d4;}",
       ".lsf-success-view{text-align:center;padding:40px 16px;}",
-      ".lsf-success-view h3{font-size:20px;margin:0 0 8px;}",
+      ".lsf-success-view h3{font-size:20px;margin-bottom:8px;}",
       ".lsf-success-view p{font-size:14px;color:var(--lsf-muted);line-height:1.7;}",
-      "@media (max-width:480px){.lsf-root{padding:24px 14px 32px;}.lsf-section{padding:18px 14px;}}"
+      "@media (max-width:680px){",
+      "  .lsf-grid{grid-template-columns:minmax(0,1fr);}",
+      "  .lsf-choices{grid-template-columns:repeat(2,minmax(0,1fr));}",
+      "  .lsf-choices-radio{grid-template-columns:minmax(0,1fr);}",
+      "}",
+      "@media (max-width:480px){",
+      "  .lsf-root{padding:24px 14px 32px;}",
+      "  .lsf-section{padding:22px 16px 24px;}",
+      "  .lsf-header h2{font-size:21px;}",
+      "  .lsf-name-row{gap:10px;}",
+      "  .lsf-choices{gap:8px;}",
+      "  .lsf-choice label{padding:10px 12px;font-size:13px;gap:8px;}",
+      "}"
     ].join("\n");
     document.head.appendChild(style);
   }
@@ -131,405 +145,280 @@
   var CHECK_SVG =
     '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8.5L6.2 11.7L13 4.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
+  // ブロック（見出し付きカード）
+  function section(step, title) {
+    var grid = el("div", { class: "lsf-grid" });
+    var node = el("div", { class: "lsf-section" }, [
+      el("div", { class: "lsf-section-head" }, [
+        el("span", { class: "lsf-step", text: step }),
+        el("h3", { text: title }),
+      ]),
+      grid,
+    ]);
+    return { node: node, grid: grid };
+  }
+
+  // 項目（ラベル＋入力部品＋エラー表示）
+  function field(opts) {
+    var node = el("div", { class: "lsf-field" + (opts.span2 ? " lsf-span2" : "") });
+    var label = el(opts.forId ? "label" : "div", { class: "lsf-label" }, [
+      el("span", { text: opts.label }),
+      el("span", { class: opts.optional ? "lsf-opt" : "lsf-req", text: opts.optional ? "任意" : "必須" }),
+    ]);
+    if (opts.forId) label.setAttribute("for", opts.forId);
+    node.appendChild(label);
+    if (opts.desc) node.appendChild(el("p", { class: "lsf-desc", text: opts.desc }));
+    node.appendChild(opts.control);
+    var err = el("div", { class: "lsf-error-msg", text: opts.error || "" });
+    node.appendChild(err);
+    return { node: node, err: err };
+  }
+
+  function selectBox(name, options) {
+    var select = el("select", { class: "lsf-input", id: nextId("lsf-" + name), name: name });
+    select.required = true;
+    var placeholder = el("option", { value: "", text: "選択してください" });
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    options.forEach(function (o) {
+      if (o.region) {
+        var group = el("optgroup", { label: o.region });
+        o.list.forEach(function (v) {
+          group.appendChild(el("option", { value: v, text: v }));
+        });
+        select.appendChild(group);
+      } else {
+        select.appendChild(el("option", { value: o, text: o }));
+      }
+    });
+    return select;
+  }
+
+  function textInput(type, name, placeholder) {
+    var input = el("input", { class: "lsf-input", type: type, id: nextId("lsf-" + (name || "text")), placeholder: placeholder });
+    if (name) input.setAttribute("name", name);
+    input.required = true;
+    return input;
+  }
+
+  // チェックボックス／ラジオの選択肢群
+  function choices(type, name, options, cols) {
+    var group = el("div", {
+      class: "lsf-choices" + (type === "radio" ? " lsf-choices-radio" : ""),
+      style: "--lsf-cols:" + cols,
+      role: type === "radio" ? "radiogroup" : "group",
+    });
+    options.forEach(function (opt) {
+      var id = nextId("lsf-choice");
+      var input = el("input", { type: type, name: name, id: id, value: opt });
+      if (type === "radio") input.required = true;
+      group.appendChild(
+        el("div", { class: "lsf-choice" }, [
+          input,
+          el("label", { for: id }, [el("span", { class: "lsf-box", html: CHECK_SVG }), el("span", { text: opt })]),
+        ])
+      );
+    });
+    return group;
+  }
+
+  function checkedValues(form, name) {
+    return Array.prototype.slice
+      .call(form.querySelectorAll('input[name="' + name + '"]:checked'))
+      .map(function (i) {
+        return i.value;
+      });
+  }
+
   function buildForm(mountPoint) {
     var root = el("div", { class: "lsf-root" });
-
     root.appendChild(
-      el("div", { class: "lsf-header" }, [
-        el("h2", { text: CONFIG.HERO_TITLE }),
-        el("p", { text: CONFIG.HERO_LEAD }),
-      ])
+      el("div", { class: "lsf-header" }, [el("h2", { text: CONFIG.HERO_TITLE }), el("p", { text: CONFIG.HERO_LEAD })])
     );
 
-    var form = el("form", { id: "lsf-form", novalidate: "novalidate" });
+    var form = el("form", { id: "lsf-form", class: "lsf-form", novalidate: "novalidate" });
     var banner = el("div", { class: "lsf-banner" });
     form.appendChild(banner);
 
+    /* --- 01 探索条件 --- */
+    var s1 = section("01", "探索条件");
+    var prefSelect = selectBox("prefecture", PREFECTURES);
+    var prefField = field({ label: "探索したい都道府県", forId: prefSelect.id, control: prefSelect, error: "都道府県を選択してください", span2: true });
     var typeName = "lsf-type-" + Date.now();
-    var columns = el("div", { class: "lsf-columns" });
-    var leftCol = el("div", { class: "lsf-col lsf-col-left" });
-    var rightCol = el("div", { class: "lsf-col lsf-col-right" });
-    columns.appendChild(leftCol);
-    columns.appendChild(rightCol);
+    var typeGroup = choices("checkbox", typeName, LAND_TYPES, 4);
+    var typeField = field({ label: "探索したい土地・物件種別", desc: "複数選択可", control: typeGroup, error: "1つ以上選択してください", span2: true });
+    s1.grid.appendChild(prefField.node);
+    s1.grid.appendChild(typeField.node);
 
-    var prefId = nextId("lsf-pref");
-    var prefSelect = el("select", { class: "lsf-select", id: prefId, name: "prefecture" });
-    prefSelect.required = true;
-    var prefPlaceholder = el("option", { value: "", text: "選択してください" });
-    prefPlaceholder.disabled = true;
-    prefPlaceholder.selected = true;
-    prefSelect.appendChild(prefPlaceholder);
-    PREFECTURES.forEach(function (group) {
-      var optgroup = el("optgroup", { label: group.region });
-      group.list.forEach(function (pref) {
-        optgroup.appendChild(el("option", { value: pref, text: pref }));
-      });
-      prefSelect.appendChild(optgroup);
+    /* --- 02 仕入れについて --- */
+    var s2 = section("02", "仕入れについて");
+    var methodField = field({
+      label: "現在の土地・物件の仕入れ方法",
+      control: choices("radio", "purchase_method", PURCHASE_METHODS, 2),
+      error: "仕入れ方法を選択してください",
+      span2: true,
     });
-    var prefSection = el("div", { class: "lsf-section lsf-cell-pref" }, [
-      el("div", { class: "lsf-section-title" }, [
-        el("span", { text: "探索したい都道府県" }),
-        el("span", { class: "lsf-req", text: "必須" }),
-      ]),
-    ]);
-    var prefError = el("div", { class: "lsf-error-msg", text: "都道府県を選択してください" });
-    prefSection.appendChild(prefSelect);
-    prefSection.appendChild(prefError);
-    leftCol.appendChild(prefSection);
-
-    prefSelect.addEventListener("change", function () {
-      prefSelect.classList.remove("lsf-invalid");
-      clearFieldError(prefSection, prefError);
+    var policyField = field({
+      label: "今後の土地・物件の仕入れ方針",
+      control: choices("radio", "purchase_policy", PURCHASE_POLICIES, 2),
+      error: "仕入れ方針を選択してください",
+      span2: true,
     });
+    s2.grid.appendChild(methodField.node);
+    s2.grid.appendChild(policyField.node);
 
-    var typeSection = el("div", { class: "lsf-section lsf-cell-type" }, [
-      el("div", { class: "lsf-section-title" }, [
-        el("span", { text: "探索したい土地・物件種別" }),
-        el("span", { class: "lsf-req", text: "必須" }),
-      ]),
-      el("p", { class: "lsf-section-desc", text: "複数選択可" }),
-    ]);
-    var typeError = el("div", { class: "lsf-error-msg", text: "1つ以上選択してください" });
-    var typeGroup = el("div", { class: "lsf-checkbox-group" });
-    LAND_TYPES.forEach(function (t) {
-      var id = nextId("lsf-type");
-      var input = el("input", { type: "checkbox", name: typeName, id: id, value: t });
-      var label = el("label", { for: id }, [
-        el("span", { class: "lsf-box", html: CHECK_SVG }),
-        el("span", { text: t }),
-      ]);
-      input.addEventListener("change", function () {
-        clearFieldError(typeSection, typeError);
-      });
-      typeGroup.appendChild(el("div", { class: "lsf-checkbox" }, [input, label]));
-    });
-    typeSection.appendChild(typeGroup);
-    typeSection.appendChild(typeError);
-    leftCol.appendChild(typeSection);
+    /* --- 03 お客様情報 --- */
+    var s3 = section("03", "お客様情報");
+    var companyInput = textInput("text", "company", "例）株式会社〇〇");
+    var companyField = field({ label: "会社名", forId: companyInput.id, control: companyInput, error: "会社名を入力してください" });
+    var positionSelect = selectBox("position", POSITIONS);
+    var positionField = field({ label: "役職", forId: positionSelect.id, control: positionSelect, error: "役職を選択してください" });
 
-    function textField(labelText, type, required, placeholder, cellClass, fieldName, targetCol) {
-      var id = nextId("lsf-field");
-      var card = el("div", { class: "lsf-section " + cellClass });
-      var wrap = el("div", { class: "lsf-field" });
-      var lbl = el("label", { for: id }, [
-        document.createTextNode(labelText),
-        el("span", {
-          class: required ? "lsf-req" : "lsf-opt",
-          text: required ? "必須" : "任意",
-        }),
-      ]);
-      var input = el("input", { type: type, id: id, name: fieldName, placeholder: placeholder || "" });
-      if (required) input.required = true;
-      var err = el("div", { class: "lsf-error-msg" });
-      wrap.appendChild(lbl);
-      wrap.appendChild(input);
-      wrap.appendChild(err);
-      card.appendChild(wrap);
-      targetCol.appendChild(card);
-      input.addEventListener("input", function () {
-        input.classList.remove("lsf-invalid");
-        err.classList.remove("lsf-show");
-      });
-      return { input: input, err: err, card: card };
-    }
-
-    // 単一選択（ラジオ）の設問カード
-    function radioField(titleText, fieldName, options, errorText, cellClass, targetCol) {
-      var card = el("div", { class: "lsf-section " + cellClass }, [
-        el("div", { class: "lsf-section-title" }, [
-          el("span", { text: titleText }),
-          el("span", { class: "lsf-req", text: "必須" }),
-        ]),
-        el("p", { class: "lsf-section-desc", text: "1つ選択してください" }),
-      ]);
-      var err = el("div", { class: "lsf-error-msg", text: errorText });
-      var group = el("div", { class: "lsf-checkbox-group lsf-radio-group", role: "radiogroup" });
-      options.forEach(function (opt) {
-        var id = nextId("lsf-radio");
-        var input = el("input", { type: "radio", name: fieldName, id: id, value: opt });
-        input.required = true;
-        var label = el("label", { for: id }, [
-          el("span", { class: "lsf-box", html: CHECK_SVG }),
-          el("span", { text: opt }),
-        ]);
-        input.addEventListener("change", function () {
-          clearFieldError(card, err);
-        });
-        group.appendChild(el("div", { class: "lsf-checkbox" }, [input, label]));
-      });
-      card.appendChild(group);
-      card.appendChild(err);
-      targetCol.appendChild(card);
-      return {
-        card: card,
-        err: err,
-        value: function () {
-          var checked = form.querySelector('input[name="' + fieldName + '"]:checked');
-          return checked ? checked.value : "";
-        },
-      };
-    }
-
-    var companyField = textField("会社名", "text", true, "例）株式会社〇〇", "lsf-cell-company", "company", rightCol);
-
-    var positionId = nextId("lsf-position");
-    var positionSelect = el("select", { class: "lsf-select", id: positionId, name: "position" });
-    positionSelect.required = true;
-    var positionPlaceholder = el("option", { value: "", text: "選択してください" });
-    positionPlaceholder.disabled = true;
-    positionPlaceholder.selected = true;
-    positionSelect.appendChild(positionPlaceholder);
-    POSITIONS.forEach(function (p) {
-      positionSelect.appendChild(el("option", { value: p, text: p }));
-    });
-    var positionCard = el("div", { class: "lsf-section lsf-cell-position" }, [
-      el("div", { class: "lsf-section-title" }, [
-        el("span", { text: "役職" }),
-        el("span", { class: "lsf-req", text: "必須" }),
-      ]),
-    ]);
-    var positionError = el("div", { class: "lsf-error-msg", text: "役職を選択してください" });
-    positionCard.appendChild(positionSelect);
-    positionCard.appendChild(positionError);
-    leftCol.appendChild(positionCard);
-    positionSelect.addEventListener("change", function () {
-      positionSelect.classList.remove("lsf-invalid");
-      clearFieldError(positionCard, positionError);
+    var seiInput = textInput("text", "", "姓（例：山田）");
+    var meiInput = textInput("text", "", "名（例：太郎）");
+    seiInput.setAttribute("aria-label", "姓");
+    meiInput.setAttribute("aria-label", "名");
+    var fullNameInput = el("input", { type: "text", name: "name", class: "lsf-visually-hidden", tabindex: "-1", "aria-hidden": "true" });
+    var nameField = field({
+      label: "氏名",
+      forId: seiInput.id,
+      control: el("div", { class: "lsf-name-row" }, [seiInput, meiInput, fullNameInput]),
+      error: "姓・名を入力してください",
+      span2: true,
     });
 
-    var nameCard = el("div", { class: "lsf-section lsf-cell-name" });
-    var nameWrap = el("div", { class: "lsf-field" });
-    var seiId = nextId("lsf-sei");
-    var meiId = nextId("lsf-mei");
-    var nameLbl = el("label", {}, [
-      document.createTextNode("氏名"),
-      el("span", { class: "lsf-req", text: "必須" }),
-    ]);
-    var seiInput = el("input", { type: "text", id: seiId, placeholder: "例）山田" });
-    var meiInput = el("input", { type: "text", id: meiId, placeholder: "例）太郎" });
-    seiInput.required = true;
-    meiInput.required = true;
-    var nameRow = el("div", { class: "lsf-name-row" }, [
-      el("div", { class: "lsf-name-sub" }, [
-        el("span", { class: "lsf-name-sub-label", text: "姓" }),
-        seiInput,
-      ]),
-      el("div", { class: "lsf-name-sub" }, [
-        el("span", { class: "lsf-name-sub-label", text: "名" }),
-        meiInput,
-      ]),
-    ]);
-    var nameError = el("div", { class: "lsf-error-msg" });
-    var fullNameInput = el("input", {
-      type: "text",
-      name: "name",
-      class: "lsf-visually-hidden",
-      tabindex: "-1",
-      "aria-hidden": "true",
-    });
-    nameWrap.appendChild(nameLbl);
-    nameWrap.appendChild(nameRow);
-    nameWrap.appendChild(nameError);
-    nameCard.appendChild(nameWrap);
-    nameCard.appendChild(fullNameInput);
-    rightCol.appendChild(nameCard);
+    var emailInput = textInput("email", "email", "例）example@example.com");
+    var emailField = field({ label: "メールアドレス", forId: emailInput.id, control: emailInput });
+    var telInput = textInput("tel", "tel", "例）090-1234-5678");
+    telInput.setAttribute("pattern", "[0-9+\\-\\(\\)\\s]{9,15}");
+    var telField = field({ label: "電話番号", forId: telInput.id, control: telInput });
 
-    function fullName() {
-      return (seiInput.value.trim() + " " + meiInput.value.trim()).trim();
-    }
-    function syncFullName() {
-      fullNameInput.value = fullName();
-    }
-    [seiInput, meiInput].forEach(function (inp) {
-      inp.addEventListener("input", function () {
-        inp.classList.remove("lsf-invalid");
-        nameError.classList.remove("lsf-show");
-        syncFullName();
-      });
+    [companyField, positionField, nameField, emailField, telField].forEach(function (f) {
+      s3.grid.appendChild(f.node);
     });
 
-    var emailField = textField("メールアドレス", "email", true, "例）example@example.com", "lsf-cell-email", "email", rightCol);
-    var telField = textField("電話番号", "tel", true, "例）090-1234-5678", "lsf-cell-tel", "tel", rightCol);
-    telField.input.setAttribute("pattern", "[0-9+\\-\\(\\)\\s]{9,15}");
-
-    // 仕入れ方法・仕入れ方針（2カラムの下に横並び、スマホでは縦積み）
-    var purchaseColumns = el("div", { class: "lsf-columns" });
-    var purchaseLeft = el("div", { class: "lsf-col" });
-    var purchaseRight = el("div", { class: "lsf-col" });
-    purchaseColumns.appendChild(purchaseLeft);
-    purchaseColumns.appendChild(purchaseRight);
-
-    var methodField = radioField(
-      "現在の土地・物件の仕入れ方法",
-      "purchase_method",
-      PURCHASE_METHODS,
-      "仕入れ方法を選択してください",
-      "lsf-cell-purchase-method",
-      purchaseLeft
-    );
-    var policyField = radioField(
-      "今後の土地・物件の仕入れ方針",
-      "purchase_policy",
-      PURCHASE_POLICIES,
-      "仕入れ方針を選択してください",
-      "lsf-cell-purchase-policy",
-      purchaseRight
-    );
-
-    var consentCard = el("div", { class: "lsf-section lsf-cell-consent" });
-    var consentId = nextId("lsf-consent");
-    var consentWrap = el("div", { class: "lsf-field" });
-    var consentInput = el("input", { type: "checkbox", id: consentId });
+    /* --- 同意・送信 --- */
+    var consentInput = el("input", { type: "checkbox", id: nextId("lsf-consent") });
     consentInput.required = true;
-    var consentLabel = el("label", { for: consentId }, [
-      document.createTextNode("プライバシーポリシーに同意する "),
-    ]);
-    var ppLink = el("a", {
-      href: CONFIG.PRIVACY_POLICY_URL,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      text: "（プライバシーポリシーを見る）",
-    });
-    consentLabel.appendChild(ppLink);
-    var consentRow = el("div", { class: "lsf-consent" }, [consentInput, consentLabel]);
+    var consentLabel = el("label", { for: consentInput.id }, [document.createTextNode("プライバシーポリシーに同意する ")]);
+    consentLabel.appendChild(
+      el("a", { href: CONFIG.PRIVACY_POLICY_URL, target: "_blank", rel: "noopener noreferrer", text: "（プライバシーポリシーを見る）" })
+    );
     var consentError = el("div", { class: "lsf-error-msg", text: "プライバシーポリシーへの同意が必要です" });
-    consentInput.addEventListener("change", function () {
-      consentError.classList.remove("lsf-show");
-    });
-    consentWrap.appendChild(consentRow);
-    consentWrap.appendChild(consentError);
-    consentCard.appendChild(consentWrap);
-
-    form.appendChild(columns);
-    form.appendChild(purchaseColumns);
-    form.appendChild(consentCard);
-
     var submitBtn = el("button", { type: "submit", class: "lsf-submit", text: "送信する" });
-    form.appendChild(el("div", { class: "lsf-submit-wrap" }, [submitBtn]));
+
+    form.appendChild(s1.node);
+    form.appendChild(s2.node);
+    form.appendChild(s3.node);
+    form.appendChild(
+      el("div", { class: "lsf-footer" }, [el("div", { class: "lsf-consent" }, [consentInput, consentLabel]), consentError, submitBtn])
+    );
 
     root.appendChild(form);
     mountPoint.appendChild(root);
 
+    /* --- 入力し直したらエラー表示を消す --- */
+    function clearOnChange(inputs, errEl) {
+      inputs.forEach(function (inp) {
+        ["input", "change"].forEach(function (ev) {
+          inp.addEventListener(ev, function () {
+            inp.classList.remove("lsf-invalid");
+            errEl.classList.remove("lsf-show");
+          });
+        });
+      });
+    }
+    clearOnChange([prefSelect], prefField.err);
+    clearOnChange([].slice.call(typeGroup.querySelectorAll("input")), typeField.err);
+    clearOnChange([].slice.call(methodField.node.querySelectorAll("input")), methodField.err);
+    clearOnChange([].slice.call(policyField.node.querySelectorAll("input")), policyField.err);
+    clearOnChange([companyInput], companyField.err);
+    clearOnChange([positionSelect], positionField.err);
+    clearOnChange([seiInput, meiInput], nameField.err);
+    clearOnChange([emailInput], emailField.err);
+    clearOnChange([telInput], telField.err);
+    clearOnChange([consentInput], consentError);
+
+    function fullName() {
+      return (seiInput.value.trim() + " " + meiInput.value.trim()).trim();
+    }
+    [seiInput, meiInput].forEach(function (inp) {
+      inp.addEventListener("input", function () {
+        fullNameInput.value = fullName();
+      });
+    });
+
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     var TEL_RE = /^[0-9\-+()\s]{9,15}$/;
 
-    function showFieldError(section, errEl) {
-      errEl.classList.add("lsf-show");
-      section.classList && section.classList.add("lsf-invalid-section");
-    }
-    function clearFieldError(section, errEl) {
-      errEl.classList.remove("lsf-show");
-    }
     function showBanner(type, message) {
       banner.className = "lsf-banner lsf-show " + (type === "error" ? "lsf-error" : "lsf-success");
       banner.textContent = message;
       banner.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-    function hideBanner() {
-      banner.className = "lsf-banner";
-    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      hideBanner();
+      banner.className = "lsf-banner";
       var valid = true;
 
+      function fail(errEl, inputs, message) {
+        (inputs || []).forEach(function (i) {
+          i.classList.add("lsf-invalid");
+        });
+        if (message) errEl.textContent = message;
+        errEl.classList.add("lsf-show");
+        valid = false;
+      }
+
       var prefValue = prefSelect.value;
-      if (!prefValue) {
-        prefSelect.classList.add("lsf-invalid");
-        showFieldError(prefSection, prefError);
-        valid = false;
-      }
+      if (!prefValue) fail(prefField.err, [prefSelect]);
 
-      var types = Array.prototype.slice.call(
-        form.querySelectorAll('input[name="' + typeName + '"]:checked')
-      );
-      if (types.length === 0) {
-        showFieldError(typeSection, typeError);
-        valid = false;
-      }
+      var types = checkedValues(form, typeName);
+      if (types.length === 0) fail(typeField.err);
 
-      if (!companyField.input.value.trim()) {
-        companyField.input.classList.add("lsf-invalid");
-        companyField.err.textContent = "入力してください";
-        companyField.err.classList.add("lsf-show");
-        valid = false;
-      }
+      var methodValue = checkedValues(form, "purchase_method")[0] || "";
+      if (!methodValue) fail(methodField.err);
 
-      if (!positionSelect.value) {
-        positionSelect.classList.add("lsf-invalid");
-        showFieldError(positionCard, positionError);
-        valid = false;
-      }
+      var policyValue = checkedValues(form, "purchase_policy")[0] || "";
+      if (!policyValue) fail(policyField.err);
 
-      if (!seiInput.value.trim() || !meiInput.value.trim()) {
-        if (!seiInput.value.trim()) seiInput.classList.add("lsf-invalid");
-        if (!meiInput.value.trim()) meiInput.classList.add("lsf-invalid");
-        nameError.textContent = "姓・名を入力してください";
-        nameError.classList.add("lsf-show");
-        valid = false;
-      }
+      if (!companyInput.value.trim()) fail(companyField.err, [companyInput]);
+      if (!positionSelect.value) fail(positionField.err, [positionSelect]);
 
-      if (!emailField.input.value.trim()) {
-        emailField.input.classList.add("lsf-invalid");
-        emailField.err.textContent = "メールアドレスを入力してください";
-        emailField.err.classList.add("lsf-show");
-        valid = false;
-      } else if (!EMAIL_RE.test(emailField.input.value.trim())) {
-        emailField.input.classList.add("lsf-invalid");
-        emailField.err.textContent = "メールアドレスの形式が正しくありません";
-        emailField.err.classList.add("lsf-show");
-        valid = false;
-      }
+      var emptyName = [seiInput, meiInput].filter(function (i) {
+        return !i.value.trim();
+      });
+      if (emptyName.length) fail(nameField.err, emptyName);
 
-      if (!telField.input.value.trim()) {
-        telField.input.classList.add("lsf-invalid");
-        telField.err.textContent = "電話番号を入力してください";
-        telField.err.classList.add("lsf-show");
-        valid = false;
-      } else if (!TEL_RE.test(telField.input.value.trim())) {
-        telField.input.classList.add("lsf-invalid");
-        telField.err.textContent = "電話番号の形式が正しくありません";
-        telField.err.classList.add("lsf-show");
-        valid = false;
-      }
+      var email = emailInput.value.trim();
+      if (!email) fail(emailField.err, [emailInput], "メールアドレスを入力してください");
+      else if (!EMAIL_RE.test(email)) fail(emailField.err, [emailInput], "メールアドレスの形式が正しくありません");
 
-      var methodValue = methodField.value();
-      if (!methodValue) {
-        showFieldError(methodField.card, methodField.err);
-        valid = false;
-      }
+      var tel = telInput.value.trim();
+      if (!tel) fail(telField.err, [telInput], "電話番号を入力してください");
+      else if (!TEL_RE.test(tel)) fail(telField.err, [telInput], "電話番号の形式が正しくありません");
 
-      var policyValue = policyField.value();
-      if (!policyValue) {
-        showFieldError(policyField.card, policyField.err);
-        valid = false;
-      }
-
-      if (!consentInput.checked) {
-        showFieldError(consentCard, consentError);
-        valid = false;
-      }
+      if (!consentInput.checked) fail(consentError);
 
       if (!valid) {
         showBanner("error", "未入力・入力エラーの項目があります。ご確認ください。");
         return;
       }
 
-      syncFullName();
+      fullNameInput.value = fullName();
 
       var payload = {
         prefecture: prefValue,
-        land_types: types.map(function (t) {
-          return t.value;
-        }),
+        land_types: types,
         name: fullName(),
         last_name: seiInput.value.trim(),
         first_name: meiInput.value.trim(),
-        company: companyField.input.value.trim(),
+        company: companyInput.value.trim(),
         position: positionSelect.value,
-        email: emailField.input.value.trim(),
-        tel: telField.input.value.trim(),
+        email: email,
+        tel: tel,
         purchase_method: methodValue,
         purchase_policy: policyValue,
         privacy_consent: true,
@@ -542,7 +431,7 @@
 
       submitForm(payload)
         .then(function () {
-          renderSuccessView(root, form, banner);
+          renderSuccessView(root, form);
         })
         .catch(function (err) {
           console.error("[lsf] send failed:", err);
@@ -568,14 +457,14 @@
     });
   }
 
-  function renderSuccessView(root, form, banner) {
+  function renderSuccessView(root, form) {
     form.style.display = "none";
-    banner.className = "lsf-banner";
-    var success = el("div", { class: "lsf-success-view" }, [
-      el("h3", { text: "送信が完了しました" }),
-      el("p", { text: "お問い合わせいただきありがとうございます。担当者よりご連絡いたします。" }),
-    ]);
-    root.appendChild(success);
+    root.appendChild(
+      el("div", { class: "lsf-success-view" }, [
+        el("h3", { text: "送信が完了しました" }),
+        el("p", { text: "お問い合わせいただきありがとうございます。担当者よりご連絡いたします。" }),
+      ])
+    );
   }
 
   function mount() {
@@ -597,4 +486,4 @@
     mount();
   }
 })();
-  </script>
+</script>
